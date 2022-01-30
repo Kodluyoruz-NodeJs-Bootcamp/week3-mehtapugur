@@ -1,6 +1,10 @@
 import express from "express";
-import { loginUser, createUser } from "../controllers/authController";
-
+import {
+  loginUser,
+  createUser,
+  getHomePage,
+} from "../controllers/authController";
+import { auth } from "../middlewares/authMiddleware";
 const router = express.Router();
 
 //Routes
@@ -28,6 +32,9 @@ router.get(
 //Login and Create
 router.post("/login", loginUser);
 router.post("/signup", createUser);
+
+//?
+router.get("/home", auth, getHomePage);
 
 const authRoute = router;
 export default authRoute;

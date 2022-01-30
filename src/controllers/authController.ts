@@ -26,7 +26,8 @@ export const createUser: RequestHandler = async (req, res) => {
     const token = createToken(user._id, browserInfo);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: 600000 });
-    res.status(201).json({ user: user._id });
+    //res.status(201).json({ user: user._id }); //?
+    if (user) res.status(201).redirect("/login");
   } catch (err) {
     res.status(400).json({ errors: err });
   }
@@ -49,7 +50,8 @@ export const loginUser: RequestHandler = async (req, res) => {
 
         //send this token to cookie
         res.cookie("jwt", token, { httpOnly: true, maxAge: 600000 });
-        res.status(200).json({ user: user._id });
+        //res.status(200).json({ user: user._id }); //?
+        res.status(200).redirect("/users/home");
       } else {
         res.redirect(301, "login");
       }
@@ -61,7 +63,7 @@ export const loginUser: RequestHandler = async (req, res) => {
 };
 
 //get home page where users are listed
-export const getHomePage = async (req, res) => {
+export const getHomePage: RequestHandler = async (req, res) => {
   const users = await User.find();
   res.status(200).render("home", {
     users,

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import MongoStore from "connect-mongo";
+import MongoStore from "connect-mongo"; //?
 import path from "path";
 import authRoute from "./routes/authRoute";
 import { auth, userControl } from "./middlewares/authMiddleware";
@@ -21,17 +21,6 @@ process.on("uncaughtException", (err) => {
   console.log(err.message, err.name);
   process.exit(1);
 });
-
-//Connect DB
-mongoose
-  .connect(process.env.DATABASE_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    autoIndex: true,
-  })
-  .then(() => {
-    console.log("Database Connected Successfully..");
-  });
 
 // middleware
 app.use(express.static(path.join(__dirname, "..", "public")));
@@ -53,6 +42,17 @@ app.use(
   })
 );
 
+//Connect DB
+mongoose
+  .connect(process.env.DATABASE_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
+  .then(() => {
+    console.log("Database Connected Successfully..");
+  });
+
 app.use(
   bodyParser.urlencoded({
     extended: true,
@@ -62,16 +62,19 @@ app.use(
 //check user
 app.use(userControl);
 
-//main page
-app.get("/", (req, res, next) => {
-  res.render("index");
-});
-app.get("/home", auth, getHomePage);
-app.use(authRoute);
+// //main page
+// app.get("/", (req, res, next) => {
+//   res.render("index");
+// });
+// app.get("/home", auth, getHomePage);
+// //app.use("/users", authRoute); //?
+// app.use(authRoute);
+app.use("/", authRoute);
+app.use("/users", authRoute);
 
-const PORT = process.env.PORT;
+//const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 
-app.listen(PORT, HOST, () => {
-  console.log(`Server is listening ${HOST}:${PORT}`);
+app.listen(3000, HOST, () => {
+  console.log(`Server is listening ${HOST}:3000`);
 });
